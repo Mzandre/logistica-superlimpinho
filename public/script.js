@@ -23,46 +23,37 @@ function formatDateTime(dateString) {
   try {
     console.log('Data recebida:', dateString, typeof dateString);
 
-    let date;
+    // Formato esperado: 'YYYY-MM-DD HH24:MI:SS'
+    if (typeof dateString === 'string' && /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/.test(dateString)) {
+      // Converte formato PostgreSQL para formato ISO
+      const isoString = dateString.replace(' ', 'T') + '.000Z';
+      const date = new Date(isoString);
 
-    // Tenta diferentes formatos
-    if (typeof dateString === 'string') {
-      // Remove timezone se existir (formato PostgreSQL)
-      const cleanDate = dateString.replace(/\+\d{2}$/, '').replace(/-\d{2}$/, '');
-
-      // Tenta formato ISO
-      if (cleanDate.includes('T') || cleanDate.includes(' ')) {
-        date = new Date(cleanDate);
-      } else {
-        // Tenta parse direto
-        date = new Date(cleanDate);
+      if (!isNaN(date.getTime())) {
+        return date.toLocaleString('pt-BR', {
+          day: '2-digit',
+          month: '2-digit',
+          year: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit'
+        });
       }
-
-      // Se ainda inválida, tenta outros formatos
-      if (isNaN(date.getTime())) {
-        // Tenta formato brasileiro DD/MM/YYYY HH:mm
-        const brMatch = cleanDate.match(/^(\d{2})\/(\d{2})\/(\d{4})\s+(\d{2}):(\d{2})/);
-        if (brMatch) {
-          date = new Date(brMatch[3], brMatch[2] - 1, brMatch[1], brMatch[4], brMatch[5]);
-        }
-      }
-    } else {
-      date = new Date(dateString);
     }
 
-    // Verifica se a data é válida
-    if (isNaN(date.getTime())) {
-      console.error('Data inválida:', dateString);
-      return 'Data inválida';
+    // Fallback para outros formatos
+    const date = new Date(dateString);
+    if (!isNaN(date.getTime())) {
+      return date.toLocaleString('pt-BR', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
     }
 
-    return date.toLocaleString('pt-BR', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    });
+    console.error('Data inválida:', dateString);
+    return 'Data inválida';
   } catch (error) {
     console.error('Erro ao formatar data:', error, dateString);
     return 'Erro na data';

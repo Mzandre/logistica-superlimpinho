@@ -122,7 +122,6 @@ app.delete('/api/pedidos/clear-all', async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
-});
 
 // Iniciar servidor
 app.listen(PORT, () => {

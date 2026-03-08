@@ -48,7 +48,7 @@ app.post('/api/pedidos', async (req, res) => {
 // Buscar todos os pedidos
 app.get('/api/pedidos', async (req, res) => {
   try {
-    const sql = 'SELECT * FROM pedidos ORDER BY datahora DESC';
+    const sql = 'SELECT id, cliente, vendedor, status, datahora::text as datahora, observacao FROM pedidos ORDER BY datahora DESC';
     const result = await db.query(sql);
     res.json(result.rows);
   } catch (err) {

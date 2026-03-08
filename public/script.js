@@ -21,19 +21,38 @@ function formatDateTime(dateString) {
   if (!dateString) return 'Data inválida';
 
   try {
-    // Tenta diferentes formatos de data
+    console.log('Data recebida:', dateString, typeof dateString);
+
     let date;
 
-    // Se for string ISO, converte diretamente
-    if (typeof dateString === 'string' && dateString.includes('T')) {
-      date = new Date(dateString);
+    // Tenta diferentes formatos
+    if (typeof dateString === 'string') {
+      // Remove timezone se existir (formato PostgreSQL)
+      const cleanDate = dateString.replace(/\+\d{2}$/, '').replace(/-\d{2}$/, '');
+
+      // Tenta formato ISO
+      if (cleanDate.includes('T') || cleanDate.includes(' ')) {
+        date = new Date(cleanDate);
+      } else {
+        // Tenta parse direto
+        date = new Date(cleanDate);
+      }
+
+      // Se ainda inválida, tenta outros formatos
+      if (isNaN(date.getTime())) {
+        // Tenta formato brasileiro DD/MM/YYYY HH:mm
+        const brMatch = cleanDate.match(/^(\d{2})\/(\d{2})\/(\d{4})\s+(\d{2}):(\d{2})/);
+        if (brMatch) {
+          date = new Date(brMatch[3], brMatch[2] - 1, brMatch[1], brMatch[4], brMatch[5]);
+        }
+      }
     } else {
-      // Para outros formatos, tenta parse
       date = new Date(dateString);
     }
 
     // Verifica se a data é válida
     if (isNaN(date.getTime())) {
+      console.error('Data inválida:', dateString);
       return 'Data inválida';
     }
 

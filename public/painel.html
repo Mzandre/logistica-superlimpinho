@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sistema de Logística - Painel Gerencial</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="header">
+    <h1>📺 Sistema de Logística</h1>
+    <p>Painel Gerencial - Atualizado automaticamente</p>
+  </header>
+
+  <div class="container">
+    <div class="tv-panel">
+      <!-- Lista de Pedidos -->
+      <div class="orders-list card fade-in">
+        <h2>📦 Status dos Pedidos</h2>
+        <div id="ordersContainer">
+          <div class="loading">Carregando pedidos...</div>
+        </div>
+      </div>
+
+      <!-- Estatísticas -->
+      <div class="stats-sidebar">
+        <div class="stat-card-large stat-separando fade-in">
+          <div class="stat-number" id="tvStatSeparando">0</div>
+          <div class="stat-label">Em Separação</div>
+        </div>
+
+        <div class="stat-card-large stat-separados fade-in">
+          <div class="stat-number" id="tvStatSeparados">0</div>
+          <div class="stat-label">Separados</div>
+        </div>
+
+        <div class="stat-card-large stat-faltando fade-in">
+          <div class="stat-number" id="tvStatFaltando">0</div>
+          <div class="stat-label">Faltando Produto</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card fade-in" style="margin-top: 2rem;">
+      <h2>📋 Links Úteis</h2>
+      <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+        <a href="/" class="btn btn-primary">➕ Novo Pedido</a>
+        <a href="/logistica" class="btn btn-success">👷 Painel de Separação</a>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

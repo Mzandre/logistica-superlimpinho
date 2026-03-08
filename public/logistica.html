@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sistema de Logística - Separação</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="header">
+    <h1>👷 Sistema de Logística</h1>
+    <p>Painel de Separação</p>
+  </header>
+
+  <div class="container">
+    <!-- Estatísticas -->
+    <div class="stats-grid" id="statsContainer">
+      <div class="stat-card stat-separando">
+        <div class="stat-number" id="statSeparando">0</div>
+        <div class="stat-label">Em Separação</div>
+      </div>
+      <div class="stat-card stat-separados">
+        <div class="stat-number" id="statSeparados">0</div>
+        <div class="stat-label">Separados</div>
+      </div>
+      <div class="stat-card stat-faltando">
+        <div class="stat-number" id="statFaltando">0</div>
+        <div class="stat-label">Faltando Produto</div>
+      </div>
+    </div>
+
+    <!-- Tabela de Pedidos -->
+    <div class="card fade-in">
+      <h2>📦 Pedidos para Separação</h2>
+
+      <!-- Seção de Administração -->
+      <div id="adminSection" style="display: none; margin-bottom: 2rem; padding: 1rem; background: var(--light-gray); border-radius: 8px;">
+        <h3 style="color: var(--primary-green); margin-bottom: 1rem;">🔐 Área Administrativa</h3>
+        <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+          <button id="clearAllBtn" class="btn btn-danger" onclick="clearAllPedidos()">
+            🗑️ Limpar Todos os Pedidos
+          </button>
+        </div>
+      </div>
+
+      <!-- Botão para acessar administração -->
+      <div style="margin-bottom: 1rem;">
+        <button id="adminBtn" class="btn btn-warning" onclick="showAdminLogin()">
+          🔐 Acesso Administrativo
+        </button>
+      </div>
+
+      <!-- Modal de senha -->
+      <div id="passwordModal" class="modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000;">
+        <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 2rem; border-radius: 12px; box-shadow: var(--shadow); max-width: 400px; width: 90%;">
+          <h3 style="color: var(--primary-green); margin-bottom: 1rem;">🔐 Acesso Administrativo</h3>
+          <div class="form-group">
+            <label for="adminPassword">Digite a senha:</label>
+            <input type="password" id="adminPassword" placeholder="Digite a senha de administração">
+          </div>
+          <div style="display: flex; gap: 1rem; margin-top: 1rem;">
+            <button class="btn btn-primary" onclick="checkAdminPassword()">Acessar</button>
+            <button class="btn btn-danger" onclick="closeAdminModal()">Cancelar</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="message" class="message" style="display: none;"></div>
+
+      <div class="table-container">
+        <table id="pedidosTable">
+          <thead>
+            <tr>
+              <th>Ordem</th>
+              <th>Cliente</th>
+              <th>Vendedor</th>
+              <th>Status</th>
+              <th>Data/Hora</th>
+              <th>Ações</th>
+            </tr>
+          </thead>
+          <tbody id="pedidosBody">
+            <tr>
+              <td colspan="6" class="loading">Carregando pedidos...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="card fade-in">
+      <h2>📋 Links Úteis</h2>
+      <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+        <a href="/" class="btn btn-primary">➕ Novo Pedido</a>
+        <a href="/painel" class="btn btn-warning">📺 Painel do Gerente</a>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

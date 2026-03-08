@@ -18,14 +18,36 @@ function showMessage(message, type = 'success') {
 }
 
 function formatDateTime(dateString) {
-  const date = new Date(dateString);
-  return date.toLocaleString('pt-BR', {
-    day: '2-digit',
-    month: '2-digit',
-    year: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit'
-  });
+  if (!dateString) return 'Data inválida';
+
+  try {
+    // Tenta diferentes formatos de data
+    let date;
+
+    // Se for string ISO, converte diretamente
+    if (typeof dateString === 'string' && dateString.includes('T')) {
+      date = new Date(dateString);
+    } else {
+      // Para outros formatos, tenta parse
+      date = new Date(dateString);
+    }
+
+    // Verifica se a data é válida
+    if (isNaN(date.getTime())) {
+      return 'Data inválida';
+    }
+
+    return date.toLocaleString('pt-BR', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  } catch (error) {
+    console.error('Erro ao formatar data:', error, dateString);
+    return 'Erro na data';
+  }
 }
 
 function getStatusClass(status) {

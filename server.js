@@ -96,6 +96,17 @@ app.get('/api/estatisticas', async (req, res) => {
   }
 });
 
+// Limpar todos os pedidos
+app.delete('/api/pedidos/clear-all', async (req, res) => {
+  try {
+    const sql = 'DELETE FROM pedidos';
+    const result = await db.query(sql);
+    res.json({ message: 'Todos os pedidos foram removidos com sucesso', deletedCount: result.rowCount });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // Deletar pedido específico
 app.delete('/api/pedidos/:id', async (req, res) => {
   const { id } = req.params;
@@ -107,17 +118,6 @@ app.delete('/api/pedidos/:id', async (req, res) => {
       return res.status(404).json({ error: 'Pedido não encontrado' });
     }
     res.json({ message: 'Pedido removido com sucesso' });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
-
-// Limpar todos os pedidos
-app.delete('/api/pedidos/clear-all', async (req, res) => {
-  try {
-    const sql = 'DELETE FROM pedidos';
-    const result = await db.query(sql);
-    res.json({ message: 'Todos os pedidos foram removidos com sucesso', deletedCount: result.rowCount });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

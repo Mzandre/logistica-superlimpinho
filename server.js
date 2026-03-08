@@ -54,7 +54,7 @@ app.get('/api/pedidos', async (req, res) => {
     // Converte as datas para formato ISO string
     const pedidos = result.rows.map(pedido => ({
       ...pedido,
-      datahora: pedido.datahora ? new Date(pedido.datahora).toISOString() : null
+      dataHora: pedido.datahora ? new Date(pedido.datahora).toISOString() : null
     }));
 
     res.json(pedidos);

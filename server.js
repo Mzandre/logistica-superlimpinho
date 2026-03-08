@@ -48,12 +48,16 @@ app.post('/api/pedidos', async (req, res) => {
 // Buscar todos os pedidos
 app.get('/api/pedidos', async (req, res) => {
   try {
-    const sql = `SELECT id, cliente, vendedor, status,
-                        to_char(datahora, 'YYYY-MM-DD HH24:MI:SS') as datahora,
-                        observacao
-                 FROM pedidos ORDER BY datahora DESC`;
+    const sql = 'SELECT id, cliente, vendedor, status, datahora, observacao FROM pedidos ORDER BY datahora DESC';
     const result = await db.query(sql);
-    res.json(result.rows);
+
+    // Converte as datas para formato ISO string
+    const pedidos = result.rows.map(pedido => ({
+      ...pedido,
+      datahora: pedido.datahora ? new Date(pedido.datahora).toISOString() : null
+    }));
+
+    res.json(pedidos);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

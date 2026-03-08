@@ -23,37 +23,23 @@ function formatDateTime(dateString) {
   try {
     console.log('Data recebida:', dateString, typeof dateString);
 
-    // Formato esperado: 'YYYY-MM-DD HH24:MI:SS'
-    if (typeof dateString === 'string' && /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/.test(dateString)) {
-      // Converte formato PostgreSQL para formato ISO
-      const isoString = dateString.replace(' ', 'T') + '.000Z';
-      const date = new Date(isoString);
-
-      if (!isNaN(date.getTime())) {
-        return date.toLocaleString('pt-BR', {
-          day: '2-digit',
-          month: '2-digit',
-          year: 'numeric',
-          hour: '2-digit',
-          minute: '2-digit'
-        });
-      }
-    }
-
-    // Fallback para outros formatos
+    // Cria objeto Date diretamente da string ISO
     const date = new Date(dateString);
-    if (!isNaN(date.getTime())) {
-      return date.toLocaleString('pt-BR', {
-        day: '2-digit',
-        month: '2-digit',
-        year: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit'
-      });
+
+    // Verifica se a data é válida
+    if (isNaN(date.getTime())) {
+      console.error('Data inválida após parse:', dateString);
+      return 'Data inválida';
     }
 
-    console.error('Data inválida:', dateString);
-    return 'Data inválida';
+    // Formata para português brasileiro
+    return date.toLocaleString('pt-BR', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
   } catch (error) {
     console.error('Erro ao formatar data:', error, dateString);
     return 'Erro na data';

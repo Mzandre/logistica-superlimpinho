@@ -1,26 +1,34 @@
-const sqlite3 = require('sqlite3').verbose();
+const { Pool } = require('pg');
+require('dotenv').config();
 
-// Criar banco de dados
-const db = new sqlite3.Database('./logistica.db', (err) => {
-  if (err) {
-    console.error('Erro ao conectar ao banco de dados:', err.message);
-  } else {
-    console.log('Conectado ao banco de dados SQLite.');
+// Configuração do banco PostgreSQL
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+  ssl: {
+    rejectUnauthorized: false
   }
 });
 
 // Criar tabela pedidos se não existir
-db.serialize(() => {
-  db.run(`
-    CREATE TABLE IF NOT EXISTS pedidos (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      cliente TEXT NOT NULL,
-      vendedor TEXT NOT NULL,
-      status TEXT DEFAULT 'separando',
-      dataHora TEXT DEFAULT CURRENT_TIMESTAMP,
-      observacao TEXT
-    )
-  `);
-});
+const initDB = async () => {
+  try {
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS pedidos (
+        id SERIAL PRIMARY KEY,
+        cliente TEXT NOT NULL,
+        vendedor TEXT NOT NULL,
+        status TEXT DEFAULT 'separando',
+        datahora TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        observacao TEXT
+      )
+    `);
+    console.log('Tabela pedidos criada/verificada com sucesso.');
+  } catch (err) {
+    console.error('Erro ao criar tabela:', err);
+  }
+};
 
-module.exports = db;
+// Chamar inicialização
+initDB();
+
+module.exports = pool;

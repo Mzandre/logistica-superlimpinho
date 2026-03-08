@@ -29,35 +29,38 @@ app.get('/painel', (req, res) => {
 // API Routes
 
 // Criar novo pedido
-app.post('/api/pedidos', async (req, res) => {
+app.post('/api/pedidos', (req, res) => {
   const { cliente, vendedor, observacao } = req.body;
 
   if (!cliente || !vendedor) {
     return res.status(400).json({ error: 'Cliente e vendedor são obrigatórios' });
   }
 
-  try {
-    const sql = 'INSERT INTO pedidos (cliente, vendedor, status, datahora, observacao) VALUES ($1, $2, $3, CURRENT_TIMESTAMP, $4) RETURNING id';
-    const result = await db.query(sql, [cliente, vendedor, 'separando', observacao || '']);
-    res.json({ id: result.rows[0].id, message: 'Pedido criado com sucesso' });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
+  const sql = 'INSERT INTO pedidos (cliente, vendedor, status, dataHora, observacao) VALUES (?, ?, ?, datetime("now"), ?)';
+  const params = [cliente, vendedor, 'separando', observacao || ''];
+
+  db.run(sql, params, function(err) {
+    if (err) {
+      return res.status(500).json({ error: err.message });
+    }
+    res.json({ id: this.lastID, message: 'Pedido criado com sucesso' });
+  });
 });
 
 // Buscar todos os pedidos
-app.get('/api/pedidos', async (req, res) => {
-  try {
-    const sql = 'SELECT * FROM pedidos ORDER BY datahora DESC';
-    const result = await db.query(sql);
-    res.json(result.rows);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
+app.get('/api/pedidos', (req, res) => {
+  const sql = 'SELECT * FROM pedidos ORDER BY dataHora DESC';
+
+  db.all(sql, [], (err, rows) => {
+    if (err) {
+      return res.status(500).json({ error: err.message });
+    }
+    res.json(rows);
+  });
 });
 
 // Atualizar status do pedido
-app.put('/api/pedidos/:id/status', async (req, res) => {
+app.put('/api/pedidos/:id/status', (req, res) => {
   const { id } = req.params;
   const { status } = req.body;
 
@@ -66,62 +69,65 @@ app.put('/api/pedidos/:id/status', async (req, res) => {
     return res.status(400).json({ error: 'Status inválido' });
   }
 
-  try {
-    const sql = 'UPDATE pedidos SET status = $1 WHERE id = $2';
-    const result = await db.query(sql, [status, id]);
-    if (result.rowCount === 0) {
+  const sql = 'UPDATE pedidos SET status = ? WHERE id = ?';
+
+  db.run(sql, [status, id], function(err) {
+    if (err) {
+      return res.status(500).json({ error: err.message });
+    }
+    if (this.changes === 0) {
       return res.status(404).json({ error: 'Pedido não encontrado' });
     }
     res.json({ message: 'Status atualizado com sucesso' });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
+  });
 });
 
 // Buscar estatísticas
-app.get('/api/estatisticas', async (req, res) => {
-  try {
-    const sql = `
-      SELECT
-        COUNT(CASE WHEN status = 'separando' THEN 1 END) as separando,
-        COUNT(CASE WHEN status = 'separado' THEN 1 END) as separados,
-        COUNT(CASE WHEN status = 'faltando' THEN 1 END) as faltando,
-        COUNT(*) as total
-      FROM pedidos
-    `;
-    const result = await db.query(sql);
-    res.json(result.rows[0]);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
+app.get('/api/estatisticas', (req, res) => {
+  const sql = `
+    SELECT
+      COUNT(CASE WHEN status = 'separando' THEN 1 END) as separando,
+      COUNT(CASE WHEN status = 'separado' THEN 1 END) as separados,
+      COUNT(CASE WHEN status = 'faltando' THEN 1 END) as faltando,
+      COUNT(*) as total
+    FROM pedidos
+  `;
+
+  db.get(sql, [], (err, row) => {
+    if (err) {
+      return res.status(500).json({ error: err.message });
+    }
+    res.json(row);
+  });
 });
 
 // Deletar pedido específico
-app.delete('/api/pedidos/:id', async (req, res) => {
+app.delete('/api/pedidos/:id', (req, res) => {
   const { id } = req.params;
 
-  try {
-    const sql = 'DELETE FROM pedidos WHERE id = $1';
-    const result = await db.query(sql, [id]);
-    if (result.rowCount === 0) {
+  const sql = 'DELETE FROM pedidos WHERE id = ?';
+
+  db.run(sql, [id], function(err) {
+    if (err) {
+      return res.status(500).json({ error: err.message });
+    }
+    if (this.changes === 0) {
       return res.status(404).json({ error: 'Pedido não encontrado' });
     }
     res.json({ message: 'Pedido removido com sucesso' });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
+  });
 });
 
 // Limpar todos os pedidos
-app.delete('/api/pedidos/clear-all', async (req, res) => {
-  try {
-    const sql = 'DELETE FROM pedidos';
-    const result = await db.query(sql);
-    res.json({ message: 'Todos os pedidos foram removidos com sucesso', deletedCount: result.rowCount });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
+app.delete('/api/pedidos/clear-all', (req, res) => {
+  const sql = 'DELETE FROM pedidos';
+
+  db.run(sql, [], function(err) {
+    if (err) {
+      return res.status(500).json({ error: err.message });
+    }
+    res.json({ message: 'Todos os pedidos foram removidos com sucesso', deletedCount: this.changes });
+  });
 });
 
 // Iniciar servidor
